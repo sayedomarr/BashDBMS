@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # File: utils/common.sh
 # Purpose: Common reusable functions across BashDBMS
 # Author: sayedomarr

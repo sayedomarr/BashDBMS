@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Author: sayedomarr
 # Date: 2025-07-18
 # Purpose: Initialize the project structure for the DBMS

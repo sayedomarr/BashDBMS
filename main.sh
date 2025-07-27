@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Author: sayedomarr
 # Date: 2025-07-18
 # Purpose: main script with a droplist menu to help user manage database and do all DBMS functions
