@@ -45,3 +45,14 @@ error() {
     local msg="$1"
     printf "Error: %s\n" "$msg" >&2
 }
+
+# print_header: Print a header with a title
+print_header() {
+    printf "\n== %s ==\n" "$1"
+}
+
+# print_warning: Print a warning message
+print_warning() {
+    printf "Warning: %s\n" "$1"
+}
+
