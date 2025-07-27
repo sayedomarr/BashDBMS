@@ -12,5 +12,7 @@
 # 2. List Databases
 # 3. Connect To Databases
 # 4. Drop Database
+#
 
-bash ./init.sh
+#bash ./init.sh
+source ./utils/common.sh
