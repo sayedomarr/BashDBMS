@@ -142,6 +142,41 @@ create_table() {
     printf "%s\n" "${schema[@]}"
 }
 
+
+
+## Function to list all tables in the connected database
+# It reads the .meta files in the database directory and prints their names.
+list_tables() {
+    
+    # Check if a valid database is connected
+    if [[ -z "$CONNECTED_DB" || ! -d "$CONNECTED_DB" ]]; then
+        error "Not connected to any valid database."
+        return 1
+    fi
+
+    print_header "Tables in $(basename "$CONNECTED_DB")"
+
+    # Find all .meta files (which represent table schemas)
+    local meta_files=()
+    
+    # Use find to locate all .meta files in the connected database directory
+    while IFS= read -r file; do
+        meta_files+=("$file")
+    done < <(find "$CONNECTED_DB" -maxdepth 1 -type f -name "*.meta")
+
+    # Check if any tables were found
+    if [[ ${#meta_files[@]} -eq 0 ]]; then
+        print_warning "No tables found."
+        return 0
+    fi
+
+    # Print the table names (remove .meta extension)
+    for meta_file in "${meta_files[@]}"; do
+        table_name=$(basename "${meta_file%.meta}")
+        printf "=> %s\n" "$table_name"
+    done
+}
+
 table_main_menu() {
     while true; do
         print_header "Table Management - [$(basename "$CONNECTED_DB")]"
