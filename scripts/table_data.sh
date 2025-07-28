@@ -125,3 +125,117 @@ select_from_table() {
 
     print_line
 }
+
+
+# Function to update a row in a table
+update_table() {
+    print_header "Update Table"
+
+    # Check if a database is connected
+    if ! is_connected; then
+        error "Not connected to any valid database."
+        return 1
+    fi
+
+    # Prompt for the table name
+    local table_name
+    table_name=$(prompt "Enter table name") || return 1
+    table_name=$(echo "$table_name" | xargs)
+    sanitize_input "$table_name" >/dev/null || { error "Invalid table name."; return 1; }
+
+    # Check if the table exists
+    if ! check_table_exists "$table_name"; then
+        error "Table '$table_name' does not exist."
+        return 1
+    fi
+
+    # Load the table schema
+    load_table_schema "$table_name" || return 1
+    local data_file="$CONNECTED_DB/$table_name.table"
+
+    local pk_col="${col_names[$pk_index]}"
+    local pk_type="${col_types[$pk_index]}"
+
+    # Prompt for the primary key value to update
+    local pk_val
+    pk_val=$(prompt "Enter $pk_col (Primary Key) to update") || return 1
+    pk_val=$(echo "$pk_val" | xargs)
+
+    # Validate primary key value
+    if [[ "$pk_type" == "int" && ! "$pk_val" =~ ^-?[0-9]+$ ]]; then
+        error "Primary Key must be an integer."
+        return 1
+    elif [[ "$pk_type" == "string" && "$pk_val" =~ [:] ]]; then
+        error "Colons ':' not allowed in string."
+        return 1
+    fi
+
+
+    # Search for the line to update
+    local old_row
+
+    # Check if the row with the given primary key exists   
+    old_row=$(grep -m1 "^$pk_val:" "$data_file")
+    if [[ -z "$old_row" ]]; then
+        error "No row found with Primary Key '$pk_val'."
+        return 1
+    fi
+
+    # Split the old row into values
+    IFS=':' read -ra old_values <<< "$old_row"
+    local new_values=()
+
+    # Print the current values for reference
+    print_header "Updating Row [Primary Key: $pk_val]"
+
+    # Loop through each column to get new values
+    for i in "${!col_names[@]}"; do
+        # Skip the primary key column
+        if [[ "$i" -eq "$pk_index" ]]; then
+            new_values+=("${old_values[$i]}")
+            continue
+        fi
+
+        local col="${col_names[$i]}"
+        local type="${col_types[$i]}"
+        local current_val="${old_values[$i]}"
+        local new_val=""
+        # Prompt for the new value
+        print_header "Column: $col [Type: $type]"
+        printf "Current value: '%s'\n" "$current_val"
+        while true; do
+            # Prompt for the new value
+            
+            new_val=$(prompt "New value for $col [$type] (leave empty to keep '$current_val')") || return 1
+            new_val=$(echo "$new_val" | xargs)
+
+            if [[ -z "$new_val" ]]; then
+                new_val="$current_val"
+                break
+            fi
+
+            # Validate type
+            if [[ "$type" == "int" && ! "$new_val" =~ ^-?[0-9]+$ ]]; then
+                error "Expected integer."
+                continue
+            elif [[ "$type" == "string" && "$new_val" =~ [:] ]]; then
+                error "Colons ':' are not allowed."
+                continue
+            fi
+
+            break
+        done
+        new_values+=("$new_val")
+    done
+
+    # Build updated line and write back
+    local updated_row
+    updated_row=$(IFS=:; echo "${new_values[*]}")
+
+    grep -v "^$pk_val:" "$data_file" > "$data_file.tmp"
+    printf "%s\n" "$updated_row" >> "$data_file.tmp"
+    mv "$data_file.tmp" "$data_file"
+
+    success "Row with PK '$pk_val' updated successfully."
+}
+
