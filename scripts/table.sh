@@ -177,7 +177,53 @@ list_tables() {
     done
 }
 
+
+# Function to drop a table from the connected database
+drop_table() {
+
+    # Check if a valid database is connected
+    if [[ -z "$CONNECTED_DB" || ! -d "$CONNECTED_DB" ]]; then
+        error "Not connected to any valid database."
+        return 1
+    fi
+
+    # Prompt the user for the table name to drop
+    local table_name
+    table_name=$(prompt "Enter table name to drop") || { error "Input failed."; return 1; }
+    table_name=$(echo "$table_name" | xargs)
+
+    # Sanitize the input to ensure it is a valid table name
+    sanitize_input "$table_name" >/dev/null || { error "Invalid table name."; return 1; }
+
+    local meta_file="$CONNECTED_DB/$table_name.meta"
+    local data_file="$CONNECTED_DB/$table_name.table"
+
+    # Check if the table exists by checking for its metadata and data files
+    if [[ ! -f "$meta_file" || ! -f "$data_file" ]]; then
+        error "Table '$table_name' does not exist."
+        return 1
+    fi
+
+
+    # Confirm the deletion with the user
+    if ! confirm_action "Are you sure you want to delete table '$table_name'?"; then
+        print_warning "Operation cancelled."
+        return
+    fi
+
+    # Remove the metadata and data files
+    rm -f "$meta_file" "$data_file"
+    success "Table '$table_name' deleted successfully."
+}
+
+
+# Main menu for table management
 table_main_menu() {
+    if [[ -z "$CONNECTED_DB" || ! -d "$CONNECTED_DB" ]]; then
+        error "Not connected to a valid database."
+        return 1
+    fi
+
     while true; do
         print_header "Table Management - [$(basename "$CONNECTED_DB")]"
         printf "1) Create Table\n2) List Tables\n3) Drop Table\n4) Back to Main Menu\n"
@@ -186,12 +232,16 @@ table_main_menu() {
         local choice
         read -rp "Select an option [1-4]: " choice
 
+        if ! [[ "$choice" =~ ^[1-4]$ ]]; then
+            error "Invalid option. Please select a number between 1 and 4."
+            continue
+        fi
+
         case "$choice" in
             1) create_table ;;
             2) list_tables ;;
             3) drop_table ;;
-            4) break ;; 
-            *) error "Invalid option." ;;
+            4) break ;;
         esac
     done
 }
