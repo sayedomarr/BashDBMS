@@ -100,4 +100,53 @@ is_positive_integer() {
     fi
 }
 
+# utils/table_utils.sh
+check_table_exists() {
+    local tbl="$1"
+    [[ -f "$CONNECTED_DB/$tbl.meta" && -f "$CONNECTED_DB/$tbl.table" ]]
+}
+
+is_connected() {
+    [[ -n "$CONNECTED_DB" && -d "$CONNECTED_DB" ]]
+}
+
+load_table_schema() {
+    local table_name="$1"
+    local meta_file="$CONNECTED_DB/$table_name.meta"
+
+    [[ ! -f "$meta_file" ]] && error "Table '$table_name' does not exist." && return 1
+
+    # Read the schema from the meta file
+    local -a col_names col_types row_values
+    local pk_index=-1
+    local line index=0
+
+
+    # Read the schema and identify the primary key
+    while IFS= read -r line; do
+
+        # Split the line into name and type
+        name="${line%%:*}"
+        # Remove the name part 
+        rest="${line#*:}"
+
+        # Extract type 
+        type="${rest%%:*}"
+
+        # Remove the type part and check for primary key
+        [[ "$rest" == *":pk" ]] && pk_index=$index
+
+        # Add to arrays
+        col_names+=("$name")
+        col_types+=("$type")
+        ((index++))
+    done < "$meta_file"
+
+    # Validate primary key presence
+    if [[ "$pk_index" -eq -1 ]]; then
+        error "No primary key defined in table schema."
+        return 1
+    fi
+
+}
 
