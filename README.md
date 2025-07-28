@@ -11,7 +11,7 @@ A modular CLI-based Database Management System implemented in Bash, following cl
   - `utils/` — shared reusable utility functions
   - `scripts/` — core application logic
   - `tests/` — future test scripts and unit tests
-- [ ] Implement base utility functions:
+- [x] Implement base utility functions:
   - Input sanitization
   - Prompting
   - Basic validations
@@ -20,12 +20,12 @@ A modular CLI-based Database Management System implemented in Bash, following cl
 ---
 
 ### 📦 Phase 2: Database Management
-- [ ] `Create Database` — creates a new folder under `databases/`
-- [ ] `List Databases` — displays all database directories
-- [ ] `Drop Database` — deletes a database folder recursively
-- [ ] `Connect To Database` — validates and connects user to a DB for table operations
-- [ ] Validate names using `sanitize_input`
-- [ ] Ensure proper error messages for missing, invalid, or duplicate DBs
+- [x] `Create Database` — creates a new folder under `databases/`
+- [x] `List Databases` — displays all database directories
+- [x] `Drop Database` — deletes a database folder recursively
+- [x] `Connect To Database` — validates and connects user to a DB for table operations
+- [x] Validate names using `sanitize_input`
+- [x] Ensure proper error messages for missing, invalid, or duplicate DBs
 
 ---
 
