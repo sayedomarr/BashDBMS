@@ -9,9 +9,13 @@
 
 #path to the utils directory
 UTILS_DIR="$(dirname "$(realpath "$0")")"/utils
+SCRIPTS_DIR="$(dirname "$(realpath "$0")")"/scripts
 
 # Source common utility functions
 source "$UTILS_DIR/common.sh"
+
+# Source database management functions
+source "$SCRIPTS_DIR/record.sh"
 
 
 
@@ -217,6 +221,7 @@ drop_table() {
 }
 
 
+
 # Main menu for table management
 table_main_menu() {
     if [[ -z "$CONNECTED_DB" || ! -d "$CONNECTED_DB" ]]; then
@@ -226,22 +231,23 @@ table_main_menu() {
 
     while true; do
         print_header "Table Management - [$(basename "$CONNECTED_DB")]"
-        printf "1) Create Table\n2) List Tables\n3) Drop Table\n4) Back to Main Menu\n"
+        printf "1) Create Table\n"
+        printf "2) List Tables\n"
+        printf "3) Drop Table\n"
+        printf "4) Records Menu (Insert/Select/Update/Delete)\n"
+        printf "5) Back to Main Menu\n"
         print_line
 
         local choice
-        read -rp "Select an option [1-4]: " choice
-
-        if ! [[ "$choice" =~ ^[1-4]$ ]]; then
-            error "Invalid option. Please select a number between 1 and 4."
-            continue
-        fi
+        read -rp "Select an option [1-5]: " choice
 
         case "$choice" in
             1) create_table ;;
             2) list_tables ;;
             3) drop_table ;;
-            4) break ;;
+            4) record_main_menu ;;
+            5) break ;;
+            *) error "Invalid option." ;;
         esac
     done
 }

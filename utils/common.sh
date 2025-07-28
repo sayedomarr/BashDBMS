@@ -83,10 +83,17 @@ print_warning() {
 confirm_action() {
     local msg="$1"
     local input
-    printf "%s (y/n): " "$msg"
-    read -r input
-    [[ "$input" == "y" || "$input" == "Y" ]]
+    while true; do
+        printf "%s (y/n): " "$msg"
+        read -r input
+        case "$input" in
+            [yY]) return 0 ;;  # يعني yes
+            [nN]) return 1 ;;  # يعني no
+            *) printf "Invalid input. Please enter 'y' or 'n' only.\n" ;;
+        esac
+    done
 }
+
 
 
 # Check if input is a positive integer (1 or more)
@@ -116,10 +123,12 @@ load_table_schema() {
 
     [[ ! -f "$meta_file" ]] && error "Table '$table_name' does not exist." && return 1
 
-    # Read the schema from the meta file
-    local -a col_names col_types row_values
-    local pk_index=-1
-    local line index=0
+    
+    col_names=()
+    col_types=()
+    pk_index=-1
+    local index=0
+
 
 
     # Read the schema and identify the primary key
@@ -149,4 +158,5 @@ load_table_schema() {
     fi
 
 }
+
 
