@@ -23,10 +23,11 @@ sanitize_input() {
 prompt() {
     local msg="$1"
     local input
-    printf "%s: " "$msg"
-    read -r input
+    read -r -p "$msg: " input
+    input=$(echo "$input" | xargs)  # remove leading/trailing spaces
     printf "%s" "$input"
 }
+
 
 #print_line: Print a separator line
 print_line() {
@@ -54,5 +55,13 @@ print_header() {
 # print_warning: Print a warning message
 print_warning() {
     printf "Warning: %s\n" "$1"
+}
+
+confirm_action() {
+    local msg="$1"
+    local input
+    printf "%s (y/n): " "$msg"
+    read -r input
+    [[ "$input" == "y" || "$input" == "Y" ]]
 }
 

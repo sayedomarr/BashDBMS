@@ -14,5 +14,40 @@
 # 4. Drop Database
 #
 
-#bash ./init.sh
-source ./utils/common.sh
+ROOT_DIR="$(dirname "$(realpath "$0")")"
+SCRIPTS_DIR="$ROOT_DIR/scripts"
+UTILS_DIR="$ROOT_DIR/utils"
+
+source "$UTILS_DIR/common.sh"
+source "$SCRIPTS_DIR/db.sh"
+#bash "$ROOT_DIR/init.sh"
+
+
+
+main() {
+    while true; do
+        print_header "Database Management"
+        printf "1) Create Database\n2) List Databases\n3) Drop Database\n4) Connect To Database\n5) Exit\n"
+        print_line
+
+        local choice
+        read -rp "Select an option [1-5]: " choice
+        if [[ ! "$choice" =~ ^[1-5]$ ]]; then
+            error "Invalid input. Please enter a number between 1 and 5."
+            continue
+        fi
+        case "$choice" in
+            1) create_database ;;
+            2) list_databases ;;
+            3) drop_database ;;
+            4) connect_to_database ;;
+            5) success "Goodbye!"; break ;;
+            *) error "Invalid option." ;;
+        esac
+
+        print_line
+    done
+}
+
+
+main "$@"
