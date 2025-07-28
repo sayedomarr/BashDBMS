@@ -90,12 +90,11 @@ drop_database() {
 connect_to_database() {
     local name
 
-    # Prompt the user for the database name to connect to
+    
     print_header "Connect To Database"
     name=$(prompt "Enter database name to connect") || { error "Invalid input."; return 1; }
-    name=$(echo "$name" | xargs)  # trim whitespace
+    name=$(echo "$name" | xargs)
 
-    # Sanitize the input to ensure it is a valid database name
     sanitize_input "$name" >/dev/null || { error "Invalid database name."; return 1; }
 
     # Check if the database directory exists
@@ -105,8 +104,19 @@ connect_to_database() {
         return 1
     fi
 
+    # Set the global variable for the connected database
     export CONNECTED_DB="$db_dir"
     success "Connected to database '$name'."
+
+    # Load the table management script
+    local table_script="$SCRIPTS_DIR/table.sh"
+    if [[ -f "$table_script" ]]; then
+        source "$table_script"
+        table_main_menu
+    else
+        error "Table management script not found."
+    fi
 }
+
 
 
