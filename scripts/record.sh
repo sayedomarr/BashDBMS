@@ -98,33 +98,92 @@ select_from_table() {
     load_table_schema "$table_name" || return 1
     local data_file="$CONNECTED_DB/$table_name.table"
 
-    # Check if the data file exists and is not empty
     if [[ ! -s "$data_file" ]]; then
         print_warning "No rows found in table '$table_name'."
         return
     fi
 
-    # Print the table header
+    print_header "Select Options"
+    printf "1) Show all rows\n"
+    printf "2) Show specific column\n"
+    printf "3) Show row by Primary Key\n"
     print_line
-    printf "|"
-    for col in "${col_names[@]}"; do
-        printf " %-15s |" "$col"
-    done
-    printf "\n"
-    print_line
+    local opt
+    read -rp "Choose option [1-3]: " opt
 
-    # Read and print each row
-    while IFS= read -r row; do
-        IFS=':' read -ra fields <<< "$row"
-        printf "|"
-        for field in "${fields[@]}"; do
-            printf " %-15s |" "$field"
-        done
-        printf "\n"
-    done < "$data_file"
-
-    print_line
+    case "$opt" in
+        1)
+            # Show all rows 
+            print_line
+            printf "|"
+            for col in "${col_names[@]}"; do
+                printf " %-15s |" "$col"
+            done
+            printf "\n"
+            print_line
+            while IFS= read -r row; do
+                IFS=':' read -ra fields <<< "$row"
+                printf "|"
+                for field in "${fields[@]}"; do
+                    printf " %-15s |" "$field"
+                done
+                printf "\n"
+            done < "$data_file"
+            print_line
+            ;;
+        2)
+            # Show specific column
+            print_header "Columns"
+            for i in "${!col_names[@]}"; do
+                printf "%d) %s\n" "$((i+1))" "${col_names[$i]}"
+            done
+            read -rp "Choose column number: " col_num
+            ((col_num--))
+            if [[ "$col_num" -ge 0 && "$col_num" -lt "${#col_names[@]}" ]]; then
+                print_line
+                printf "| %-15s |\n" "${col_names[$col_num]}"
+                print_line
+                while IFS= read -r row; do
+                    IFS=':' read -ra fields <<< "$row"
+                    printf "| %-15s |\n" "${fields[$col_num]}"
+                done < "$data_file"
+                print_line
+            else
+                error "Invalid column number."
+            fi
+            ;;
+        3)
+            # Show row by Primary Key
+            local pk_val
+            pk_val=$(prompt "Enter Primary Key value") || return 1
+            pk_val=$(echo "$pk_val" | xargs)
+            print_line
+            printf "|"
+            for col in "${col_names[@]}"; do
+                printf " %-15s |" "$col"
+            done
+            printf "\n"
+            print_line
+            local row
+            row=$(grep "^$pk_val:" "$data_file")
+            if [[ -z "$row" ]]; then
+                error "No row found with Primary Key '$pk_val'."
+            else
+                IFS=':' read -ra fields <<< "$row"
+                printf "|"
+                for field in "${fields[@]}"; do
+                    printf " %-15s |" "$field"
+                done
+                printf "\n"
+                print_line
+            fi
+            ;;
+        *)
+            error "Invalid option."
+            ;;
+    esac
 }
+
 
 
 # Function to update a row in a table
