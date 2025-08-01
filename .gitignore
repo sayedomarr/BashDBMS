@@ -1,4 +1,6 @@
 /databases/*
-!/databases/
+!/databases/.gitkeep
+
 *.tmp
 *.log
+

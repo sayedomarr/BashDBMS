@@ -20,7 +20,7 @@ It allows users to create, manage, and interact with databases and tables direct
 
 - **Record Menu (per table):**
   - Insert Into Table (with type and PK validation)
-  - Select From Table (show all, specific column, by primary key, filter, max, min)
+  - Select From Table (show all, specific column, by primary key)
   - Update Table
   - Delete From Table
 

@@ -113,7 +113,7 @@ select_from_table() {
 
     case "$opt" in
         1)
-            # Show all rows 
+            # Show all rows )
             print_line
             printf "|"
             for col in "${col_names[@]}"; do
