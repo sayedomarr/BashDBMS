@@ -1,86 +1,79 @@
-# 📁 Bash Shell Script Database Management System (DBMS)
-A modular CLI-based Database Management System implemented in Bash, following clean architecture and best scripting practices.
+# BashDBMS
 
----
+## Overview
 
-## 🚀 Project Phases
+**BashDBMS** is a simple Database Management System built using Bash shell scripts.  
+It allows users to create, manage, and interact with databases and tables directly from the command line.
 
-### ✅ Phase 1: Setup & Utilities
-- [x] Create the project directory structure:
-  - `databases/` — stores all databases as directories
-  - `utils/` — shared reusable utility functions
-  - `scripts/` — core application logic
-  - `tests/` — future test scripts and unit tests
-- [x] Implement base utility functions:
-  - Input sanitization
-  - Prompting
-  - Basic validations
-  - Console formatting (headers, separators, success/errors)
+## Features
 
----
+- **Main Menu:**
+  - Create Database
+  - List Databases
+  - Connect to Database
+  - Drop Database
 
-### 📦 Phase 2: Database Management
-- [x] `Create Database` — creates a new folder under `databases/`
-- [x] `List Databases` — displays all database directories
-- [x] `Drop Database` — deletes a database folder recursively
-- [x] `Connect To Database` — validates and connects user to a DB for table operations
-- [x] Validate names using `sanitize_input`
-- [x] Ensure proper error messages for missing, invalid, or duplicate DBs
+- **Table Menu (after connecting):**
+  - Create Table (with column types and primary key)
+  - List Tables
+  - Drop Table
 
----
+- **Record Menu (per table):**
+  - Insert Into Table (with type and PK validation)
+  - Select From Table (show all, specific column, by primary key, filter, max, min)
+  - Update Table
+  - Delete From Table
 
-### 📂 Phase 3: Table Management
-- [ ] Inside connected DB, provide:
-  - `Create Table`
-  - `List Tables`
-  - `Drop Table`
-- [ ] Use schema and metadata (column names, types, primary key)
-- [ ] Store table data and structure in flat files
+## How It Works
 
----
+- Each database is stored as a directory.
+- Each table is stored as two files: `.meta` (schema) and `.table` (data).
+- All operations are performed via interactive CLI menus.
 
-### 🧮 Phase 4: Data Manipulation
-- [ ] `Insert Into Table`
-- [ ] `Select From Table`
-- [ ] `Update Table`
-- [ ] `Delete From Table`
-- [ ] Validate:
-  - Data types (e.g. `int`, `string`)
-  - Primary key uniqueness
-  - Column existence and format
+## Usage
 
----
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/sayedomarr/BashDBMS.git
+   cd BashDBMS
+   ```
 
-### 🛡️ Phase 5: Error Handling & Validation
-- [ ] Apply detailed validation for:
-  - Names
-  - Data types
-  - Primary key rules
-- [ ] Graceful error handling using:
-  - `error()` function
-  - Standard error stream
-  - Clear validation messages
+2. **Run the main script:**
+   ```bash
+   ./main.sh
+   ```
 
----
+3. **Follow the menu prompts to manage databases and tables.**
 
-### 🧱 Phase 6: Modularization & Testing
-- [ ] Refactor logic into:
-  - `scripts/` per module (db.sh, table.sh, record.sh)
-  - `main.sh` as launcher
-- [ ] Add basic **unit test scripts** under `tests/`
-- [ ] Make utilities fully reusable
+## Requirements
 
----
+- Bash (Linux recommended)
+- No external dependencies
 
-### 💡 Phase 7: Bonus Features (Optional)
-- [ ] **SQL-like parser** for common commands
-- [ ] **GUI Mode** using:
-  - `zenity`
-  - `whiptail`
-  - `dialog`
+## Project Structure
 
----
+```
+BashDBMS/
+├── main.sh
+├── scripts/
+│   ├── db.sh
+│   ├── table.sh
+│   └── record.sh
+├── utils/
+│   └── common.sh
+├── databases/      # All databases stored here
+└── README.md
+```
 
-## 📁 Folder Structure
+## Notes
+
+- All data is stored locally in the `databases` directory.
+- Input validation is enforced for names, types, and primary keys.
 
 
+
+
+
+
+
+Feel free to adjust the README for your project and add more

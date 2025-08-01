@@ -1,3 +1,4 @@
-databases/
+/databases/*
+!/databases/
 *.tmp
 *.log
