@@ -72,8 +72,3 @@ BashDBMS/
 
 
 
-
-
-
-
-Feel free to adjust the README for your project and add more
